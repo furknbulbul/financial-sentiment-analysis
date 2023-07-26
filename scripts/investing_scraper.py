@@ -11,14 +11,14 @@ import pandas as pd
 """
 
 
-STOCK_NAME = "akbank" # hisse senedinin adını yazın, sadece output file olustururken kullanılıyor
+STOCK_NAME = "astor" # hisse senedinin adını yazın, sadece output file olustururken kullanılıyor
 BASE_URL = "https://tr.investing.com"
-STOCK_NEWS_URL = "https://tr.investing.com/equities/akbank-news/"  # buraya hisse senedinin haberlerinin bulundugu sayfanın urlini yazın
+STOCK_NEWS_URL = "https://tr.investing.com/equities/astor-enerji-as-news/"  # buraya hisse senedinin haberlerinin bulundugu sayfanın urlini yazın, sonuna / koyun
 
 driver = webdriver.Chrome()
 driver.get(STOCK_NEWS_URL)
 
-OLDEST_DATE = date(2023, 7, 15)  # hisse senedinin haberlerinin bulundugu sayfada en eski haberin tarihi, bu tarihten eski haberler cekilmez
+OLDEST_DATE = date(2022, 6, 1)  # hisse senedinin haberlerinin bulundugu sayfada en eski haberin tarihi, bu tarihten eski haberler cekilmez
 page_source = driver.page_source
 soup = BeautifulSoup(page_source, 'lxml')
 
@@ -30,10 +30,14 @@ def compare_date_and_date_str(date_str, date_):
 
 def find_article_cards_on_page(index = None):
     new_url = STOCK_NEWS_URL + str(index) if index else STOCK_NEWS_URL
+    
     driver.get(new_url)
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, 'lxml')
     article_cards = soup.find_all("li", class_="border-b border-[#E6E9EB] first:border-t last:border-0")
+    if article_cards == []:
+        return [], False
+    
     articles = []
     for article_card in article_cards:
         article_link = article_card.find("a", class_="inline-block text-sm leading-5 sm:text-base sm:leading-6 md:text-lg md:leading-7 font-bold mb-2 hover:underline")
@@ -72,29 +76,38 @@ def get_articles():
 
 
 def get_article_text(article_url):
-    url = BASE_URL + article_url
-    driver.get(url)
-    page_source = driver.page_source
-    soup = BeautifulSoup(page_source, 'lxml')
-    article_page = soup.find("div", class_="WYSIWYG articlePage")
-    if article_page is None:
-        return ""
-    tokens = []
-    for i in article_page.find_all("p"):
-        if "Pozisyon" not in i.text: #anlamadığım bir şekilde pozisyon ... yazısı çıkıyor onu engellemek için 
-            tokens.append(i.text)
-            temp = i.find_all("span", class_ = "aqPopupWrapper js-hover-me-wrapper")
-            if temp is not None and len(temp) > 0:
-                for j in temp:
-                    tokens.append(j.text)
-    return " ".join(tokens)
+    try:
+        url = BASE_URL + article_url
+        driver.get(url)
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'lxml')
+        article_page = soup.find("div", class_="WYSIWYG articlePage")
+        if article_page is None:
+            return ""
+        tokens = []
+        for i in article_page.find_all("p"):
+            if "Pozisyon" not in i.text: #anlamadığım bir şekilde pozisyon ... yazısı çıkıyor onu engellemek için 
+                tokens.append(i.text)
+                temp = i.find_all("span", class_ = "aqPopupWrapper js-hover-me-wrapper")
+                if temp is not None and len(temp) > 0:
+                    for j in temp:
+                        tokens.append(j.text)
+        return " ".join(tokens)
+    except:
+        return None
         
    
 
 def get_all_article_texts(articles):
     article_texts = []
+    error_count = 0
     for article in articles:
         article_text = get_article_text(article['url'])
+        if article_text is None:
+            error_count += 1
+            if error_count > 10:
+                break
+            continue
         article["text"] = article_text
         article_texts.append(article)
     return article_texts

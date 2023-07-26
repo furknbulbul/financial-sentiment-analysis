@@ -1,3 +1,4 @@
 scripts/*.xlsx
 scripts/*.csv
 scripts/chromedriver
+scripts/.DS_Store

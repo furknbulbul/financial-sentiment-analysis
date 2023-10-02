@@ -11,11 +11,9 @@ import time
 
 WEBSITE_URL = "https://www.kap.org.tr"
 BASE_URL = "https://www.kap.org.tr/tr/bist-sirketler"
-STOCK_NAME = "sasa"
+STOCK_NAME = "arclk"
 
-"""
-MOSTLY DONE, TO BE COMPLETED LATER IF WE NEED IT
-"""
+
 
 OLDEST_DATE= date(2023, 8, 1)
 
@@ -61,7 +59,7 @@ def open_details():
     print(notifications_per_page)
     number_buttons = notifications_per_page.find_elements(By.TAG_NAME, 'button')
     _250_button = number_buttons[-1]
-    driver.execute_script("arguments[0].click();", _250_button)
+    driver.execute_script("arguments[0].click();", _250_button)  # TODO: change 250 news with specific date control
 
     rows = driver.find_elements(By.CLASS_NAME, 'disclosureSelectionArea')
 
@@ -77,11 +75,13 @@ def open_details():
             brief_summary = modal_content_div.find_element(By.CLASS_NAME, 'modal-briefsummary')
             temp = brief_summary.find_elements(By.CLASS_NAME, 'type-medium')
             date = temp[0].text.strip()
-            notification_type = temp[1].text
+            
             try:
                 details = modal_content_div.find_element(By.CLASS_NAME, 'text-block-value').text
+                notification_type = temp[1].text
             except:
                 details = None
+                notification_type = None
 
             result.append({"header": header,
                         "date": date,
@@ -116,10 +116,6 @@ def open_details():
     
         
         
-
-
-        
-
 
 
 open_stock_page()

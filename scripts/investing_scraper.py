@@ -11,14 +11,14 @@ import pandas as pd
 """
 
 
-STOCK_NAME = "astor" # hisse senedinin adını yazın, sadece output file olustururken kullanılıyor
-BASE_URL = "https://tr.investing.com"
-STOCK_NEWS_URL = "https://tr.investing.com/equities/astor-enerji-as-news/"  # buraya hisse senedinin haberlerinin bulundugu sayfanın urlini yazın, sonuna / koyun
+STOCK_NAME = "google" # hisse senedinin adını yazın, sadece output file olustururken kullanılıyor
+BASE_URL = "https://www.investing.com/"
+STOCK_NEWS_URL = "https://www.investing.com/equities/google-inc-news/"  # buraya hisse senedinin haberlerinin bulundugu sayfanın urlini yazın, sonuna / koyun
 
 driver = webdriver.Chrome()
 driver.get(STOCK_NEWS_URL)
 
-OLDEST_DATE = date(2022, 6, 1)  # hisse senedinin haberlerinin bulundugu sayfada en eski haberin tarihi, bu tarihten eski haberler cekilmez
+OLDEST_DATE = date(2023, 8, 25)  # hisse senedinin haberlerinin bulundugu sayfada en eski haberin tarihi, bu tarihten eski haberler cekilmez
 page_source = driver.page_source
 soup = BeautifulSoup(page_source, 'lxml')
 
@@ -86,7 +86,7 @@ def get_article_text(article_url):
             return ""
         tokens = []
         for i in article_page.find_all("p"):
-            if "Pozisyon" not in i.text: #anlamadığım bir şekilde pozisyon ... yazısı çıkıyor onu engellemek için 
+            if "Pozisyon"  not in i.text and "Position" not in i.text: #anlamadığım bir şekilde pozisyon ... yazısı çıkıyor onu engellemek için 
                 tokens.append(i.text)
                 temp = i.find_all("span", class_ = "aqPopupWrapper js-hover-me-wrapper")
                 if temp is not None and len(temp) > 0:

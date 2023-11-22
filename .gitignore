@@ -2,3 +2,15 @@ scripts/*.xlsx
 scripts/*.csv
 scripts/chromedriver
 scripts/.DS_Store
+
+ML-models/*.txt
+ML-models/*.xlsx
+ML-models/*.csv
+
+ML-models/sentiment/saved_models/finbert-fine-tune.bin
+ML-models/classification/__pycache__/
+ML-models/sentiment/__pycache__/
+
+
+chromedriver
+.idea

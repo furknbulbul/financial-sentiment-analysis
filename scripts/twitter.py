@@ -147,7 +147,7 @@ for user_id, username in user_ids:
     
 
 #print(df)
-print(cursor_set)
-print("last cursor:", cursor_set[-1])
+#print(cursor_set)
+#print("last cursor:", cursor_set[-1])
 
 df.to_excel(f"{usernames[0]}.xlsx", index=False)
